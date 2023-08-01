@@ -6,10 +6,13 @@
     <title>View {{.Title}}</title>
 </head>
 
-<body>
+<body style="background:black;color:white;">
     <h1>{{.Title}}</h1>
-    <p>[<a href="/edit/{{.Title}}">edit</a>]</p>
-    <div>{{printf "%s" .Body}}</div>
+    <div style="display:flex;color:white;">
+        <p style="margin:0 1rem;"><a style="color:white;" href="/">back home</a></p>
+        <p style="margin:0 1rem;"><a style="color:white;" href="/edit/{{.Title}}">edit</a></p>
+    </div>
+    <div style="margin:1rem;">{{printf "%s" .Body}}</div>
 </body>
 
 </html>

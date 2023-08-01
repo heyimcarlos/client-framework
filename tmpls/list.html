@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Home</title>
+</head>
+
+<body style="background:black;color:white;">
+    <h1>A list of all files</h1>
+    <!-- this is a golang web server -->
+    <ul>
+        {{range .Pages}}
+        <li>
+            <a style="color:whitesmoke;" href="/view/{{.}}">{{.}}</a>
+        </li>
+        {{end}}
+    </ul>
+</body>
+
+</html>

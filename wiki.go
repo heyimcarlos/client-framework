@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -8,11 +9,16 @@ import (
 	"strings"
 )
 
-var templates = template.Must(template.ParseFiles("tmpls/edit.html", "tmpls/view.html"))
+var templates = template.Must(template.ParseFiles("tmpls/edit.html", "tmpls/view.html", "tmpls/list.html"))
 
 type Page struct {
 	Title string
 	Body  []byte
+}
+
+type HomePage struct {
+    Title string
+    Pages []string
 }
 
 func (p *Page) save() error {
@@ -60,6 +66,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
         m := strings.Split(r.URL.Path, "/")[1:]
+        fmt.Println(m)
 		if len(m) > 2 {
 			http.NotFound(w, r)
 			return
@@ -85,7 +92,26 @@ func renderTemplate(w http.ResponseWriter, tmpl string, page *Page) {
 	}
 }
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+    files, err := os.ReadDir("pages")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    var pages []string
+    for _, file := range files {
+        pages = append(pages, checkFilename(file.Name()))
+    }
+    page := &HomePage{Title: "Home", Pages: pages}
+	err = templates.ExecuteTemplate(w, "list.html", page)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+}
+
 func main() {
+    http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
